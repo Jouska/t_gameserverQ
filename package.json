@@ -1,0 +1,23 @@
+{
+  "name": "t_gsq2",
+  "version": "1.0.0",
+  "description": "game servery query bot for discord, using discord.js",
+  "keywords": [
+    "game",
+    "server",
+    "query",
+    "discord",
+    "bot"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "github.com/Jouska/t_gameserverQ"
+  },
+  "license": "ISC",
+  "author": "T_Hals",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
