@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { digServer } = require('../../gameDig');
-const fs = require('node:fs');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -29,8 +28,7 @@ module.exports = {
 				.setDescription('The port of the game server (optional)')
 		),
 
-	async execute(interaction, client) {
-		// Accept client as a parameter
+	async execute(interaction) {
 		const ip = interaction.options.getString('ip');
 		const game = interaction.options.getString('game');
 		const port = interaction.options.getInteger('port') || ''; // Handle optional port with a default value
@@ -43,30 +41,7 @@ module.exports = {
 
 		// Create the initial embed
 		const embed = createEmbed(queryResults, ip, game, port);
-
-		// Check if there is a stored message ID
-		let message;
-		if (client.storedMessageId) {
-			try {
-				message = await interaction.channel.messages.fetch(
-					client.storedMessageId
-				);
-				await message.edit({ embeds: [embed] });
-			} catch (error) {
-				console.log(
-					'Failed to fetch stored message, creating a new one.'
-				);
-				message = await interaction.editReply({ embeds: [embed] });
-			}
-		} else {
-			message = await interaction.editReply({ embeds: [embed] });
-		}
-
-		// Save the message ID to a file
-		fs.writeFileSync(
-			'storedMessageId.json',
-			JSON.stringify({ messageId: message.id })
-		);
+		let message = await interaction.editReply({ embeds: [embed] });
 
 		// Ensure the interval is cleared if an error occurs on the first query to prevent multiple intervals.
 		if (!queryResults.error) {

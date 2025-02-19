@@ -11,19 +11,6 @@ const { token } = require('./config.json');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-// Function to read stored message ID
-function readStoredMessageId() {
-	try {
-		const data = fs.readFileSync('storedMessageId.json', 'utf8');
-		return JSON.parse(data).messageId;
-	} catch (error) {
-		console.log('No stored message ID found.');
-		return null;
-	}
-}
-
-client.storedMessageId = readStoredMessageId();
-
 // Create paths to commands
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
@@ -60,7 +47,7 @@ for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
 	const event = require(filePath);
 	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args));
+		client.once(event.name, (...args) => event.execute(...args, client));
 	} else {
 		client.on(event.name, (...args) => event.execute(...args, client)); // Pass client to event handler
 	}
