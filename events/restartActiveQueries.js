@@ -1,18 +1,18 @@
 const { Events } = require('discord.js');
 const fs = require('node:fs');
 
-function readStoredMessageIds() {
+function readStoredMessages() {
 	try {
-		const data = fs.readFileSync('storedMessageId.json', 'utf8');
-		return JSON.parse(data).messageIds || [];
+		const data = fs.readFileSync('storedMessages.json', 'utf8');
+		return JSON.parse(data).messages || [];
 	} catch (error) {
-		console.log('No stored message IDs found.');
+		console.log('No stored messages found.');
 		return [];
 	}
 }
 
-function saveStoredMessageIds(messageIds) {
-	fs.writeFileSync('storedMessageId.json', JSON.stringify({ messageIds }));
+function saveStoredMessages(messages) {
+	fs.writeFileSync('storedMessages.json', JSON.stringify({ messages }));
 }
 
 function extractDataFromEmbed(embed) {
@@ -31,20 +31,19 @@ module.exports = {
 	name: Events.ClientReady,
 	once: true,
 	async execute(client) {
-		const channelId = '1267907516054896662'; // Replace with your channel ID
-		const channel = await client.channels.fetch(channelId);
-		const validMessageIds = [];
-		const processingMessageIds = new Set();
+		const validMessages = [];
+		const processingMessages = new Set();
 
-		client.storedMessageIds = readStoredMessageIds();
+		client.storedMessages = readStoredMessages();
 
-		for (const messageId of client.storedMessageIds) {
-			if (processingMessageIds.has(messageId)) {
+		for (const { channelId, messageId } of client.storedMessages) {
+			if (processingMessages.has(messageId)) {
 				continue;
 			}
-			processingMessageIds.add(messageId);
+			processingMessages.add(messageId);
 
 			try {
+				const channel = await client.channels.fetch(channelId);
 				const message = await channel.messages.fetch(messageId);
 				const embed = message.embeds[0];
 				if (!embed) {
@@ -77,7 +76,7 @@ module.exports = {
 						},
 					};
 					await command.execute(interaction, client);
-					validMessageIds.push(messageId);
+					validMessages.push({ channelId, messageId });
 				}
 			} catch (error) {
 				console.log(
@@ -85,11 +84,11 @@ module.exports = {
 				);
 				console.log('ERROR: ', error);
 			} finally {
-				processingMessageIds.delete(messageId);
+				processingMessages.delete(messageId);
 			}
 		}
 
-		// Save only valid message IDs
-		saveStoredMessageIds(validMessageIds);
+		// Save only valid messages
+		saveStoredMessages(validMessages);
 	},
 };
