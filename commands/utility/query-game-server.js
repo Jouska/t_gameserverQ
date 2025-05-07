@@ -39,7 +39,9 @@ module.exports = {
 					{ name: 'Minecraft', value: 'minecraft' },
 					{ name: 'Conan Exiles', value: 'conanexiles' },
 					{ name: 'Project Zomboid', value: 'projectzomboid' },
-					{ name: 'Squad', value: 'squad' }
+					{ name: 'Squad', value: 'squad' },
+					{ name: 'Counter-Strike 2', value: 'counterstrike2' }
+
 				)
 		)
 		.addIntegerOption((option) =>
